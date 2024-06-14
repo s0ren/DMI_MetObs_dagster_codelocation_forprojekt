@@ -1,0 +1,11 @@
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+DMI_MetObs/__init__.py
+DMI_MetObs/assets.py
+DMI_MetObs.egg-info/PKG-INFO
+DMI_MetObs.egg-info/SOURCES.txt
+DMI_MetObs.egg-info/dependency_links.txt
+DMI_MetObs.egg-info/requires.txt
+DMI_MetObs.egg-info/top_level.txt
