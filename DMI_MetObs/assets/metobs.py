@@ -3,10 +3,11 @@ from dagster import asset, EnvVar
 
 import json
 import jsonlines
+from pydantic import Json
 
 # import requests
 
-from DMI_MetObs.dmi_utils import request_all_features
+from DMI_MetObs.extraction.dmi_utils import request_all_features
 from . import constants
 
 @asset

@@ -1,9 +1,19 @@
-from dagster import TimeWindowPartitionsDefinition
+from dagster import TimeWindowPartitionsDefinition, HourlyPartitionsDefinition
 from ..assets import constants
 
-start_date = constants.START_DATE
+start_date = constants.STARTDATE
+start_datetime = constants.STARTDATETIME
 
 metobs_realtime_partition = TimeWindowPartitionsDefinition(
-    cron_expression="10/ * * * *",
-    start_date=start_date
+    fmt=constants.DATETIME_FORMAT,
+    cron_schedule="*/10 * * * *",
+    start=start_datetime
 )
+
+metobs_hourly_partition = HourlyPartitionsDefinition(
+    start_date=start_datetime,
+    minute_offset=0,
+    timezone="Europe/Copenhagen",
+    fmt="%Y-%m-%dT%H:%M:%S%z"
+)
+# man kunne teste denne som i DMI_MetObs_tests\test_fra_tutorial.py, eller sige at den er testet der
