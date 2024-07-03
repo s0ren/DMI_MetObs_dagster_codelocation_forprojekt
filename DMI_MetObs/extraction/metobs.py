@@ -54,7 +54,7 @@ def get_obs_hour(API_KEY :str, timestamp_to :AwareDatetime) -> list[Json]:
     """
     Get all observation from timestamp_from and one hour back.
     Calls get_obs_interval()
-    
+
     Args:
         API_KEY (str): Valid API_KEY for DMI_obs
         timestamp_to (AwareDatetime): to time
@@ -62,5 +62,5 @@ def get_obs_hour(API_KEY :str, timestamp_to :AwareDatetime) -> list[Json]:
     Returns:
         list[Json]: retrieved features from datetime_from and one hour back
     """
-    timestamp_from = timestamp_to - timedelta(hours=1)
+    timestamp_from = timestamp_to - timedelta(minutes=50)
     return get_obs_interval(API_KEY, timestamp_from, timestamp_to)

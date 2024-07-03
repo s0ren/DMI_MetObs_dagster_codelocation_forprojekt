@@ -1,5 +1,6 @@
 # from dagster import asset, materialize
-from DMI_MetObs.extraction.dmi_utils import request_all_features, timestamp10min_aligned
+from fileinput import filename
+from DMI_MetObs.extraction.dmi_utils import request_all_features, timestamp10min_aligned, timestamp2filename
 from datetime import datetime, timedelta
 
 #Pattern:
@@ -88,3 +89,14 @@ def test_request_all_pages():
 
     # Assert
     assert len(data) == 990
+
+def test_timestamp2filename():
+    #Arrange
+    timestamp = datetime.fromisoformat("2024-06-11T12:10:00Z")
+    expected_filename = "2024-06-11T14_10_00__02_00"
+
+    #Act
+    filename = timestamp2filename(timestamp)
+
+    #Assert
+    assert filename == expected_filename

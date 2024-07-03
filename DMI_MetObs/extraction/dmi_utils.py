@@ -2,7 +2,7 @@ import json
 import pydantic
 import requests
 from pydantic import Json, AwareDatetime
-
+import jsonlines
 from datetime import datetime, timedelta
 
 def timestamp10min_aligned(timestamp : datetime = datetime.now().astimezone() ) -> AwareDatetime:
@@ -32,3 +32,12 @@ def request_all_features(url :str, params :dict) -> list[Json]:
         if next_link:
             res = requests.get(next_link)
     return obs
+
+def store_data_fs(data: str, filepath: str):
+    with jsonlines.open(filepath, "w", compact=True) as writer:
+        numWritten = writer.write_all(data)
+    return numWritten
+
+def timestamp2filename(timestamp: AwareDatetime) -> str:
+    filepath = timestamp.astimezone().isoformat().replace(':', '_').replace('+','__')
+    return filepath

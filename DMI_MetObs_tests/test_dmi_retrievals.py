@@ -1,3 +1,4 @@
+from sqlite3 import Timestamp
 import pytest
 # from asyncio import constants
 # from dagster import (
@@ -18,11 +19,11 @@ from DMI_MetObs.extraction.metobs import (
     get_obs_hour
 )
 
-from DMI_MetObs.extraction.dmi_utils import timestamp10min_aligned
+from DMI_MetObs.extraction.dmi_utils import store_data_fs, timestamp10min_aligned, timestamp2filename
+import DMI_MetObs.assets.constants as dmi_asset_constants
 
 from datetime import datetime, timedelta
 
-import DMI_MetObs.assets.constants as dmi_asset_constants
 
 def test_current_obs():
     # Arrange
@@ -105,3 +106,61 @@ def test_get_obs_interval_1hour_now():
     assert len(data) > 0
     assert last_obs_ts == first_obs_ts + timedelta(minutes=50)
     
+
+def test_get_obs_hour():
+    # Arrange
+    API_KEY = "b0803242-5b7d-4ac6-93c2-2fb779cba423"
+    
+    from_ts = datetime.fromisoformat("2024-06-11T12:10:00Z")
+    to_ts   = from_ts + timedelta(minutes=60)
+
+    # Act
+    data = get_obs_hour(API_KEY, to_ts)
+    first_obs_ts = min(datetime.fromisoformat(f['properties']['observed']) for f in data)
+    last_obs_ts  = max(datetime.fromisoformat(f['properties']['observed']) for f in data)
+
+    # Assert
+    assert len(data) > 0
+    assert last_obs_ts == first_obs_ts + timedelta(minutes=50)
+    # assert len(data) == 7254
+
+
+def test_get_obs_hour_now():
+    # Arrange
+    API_KEY = "b0803242-5b7d-4ac6-93c2-2fb779cba423"
+    
+    # from_ts = datetime.fromisoformat("2024-06-11T12:10:00Z")
+    from_ts = timestamp10min_aligned() - timedelta(hours=1)
+    to_ts   = from_ts + timedelta(minutes=59)
+
+    # Act
+    data = get_obs_hour(API_KEY, to_ts)
+    first_obs_ts = min(datetime.fromisoformat(f['properties']['observed']) for f in data)
+    last_obs_ts  = max(datetime.fromisoformat(f['properties']['observed']) for f in data)
+
+    # Assert
+    assert len(data) > 0
+    assert last_obs_ts == first_obs_ts + timedelta(minutes=50)
+
+def test_store_features_as_jsonl():
+    #Arange
+    API_KEY = "b0803242-5b7d-4ac6-93c2-2fb779cba423"
+    
+    timestamp = datetime.fromisoformat("2024-06-11T12:10:00Z")
+    filepath = dmi_asset_constants.METOBS_RAW_TEMPALTE_FILE_PATH_L.format(
+        timestamp2filename(timestamp)
+    )
+    data = get_obs_hour(API_KEY, timestamp)
+    
+    #Act
+    expected_filesize = store_data_fs(data, filepath)
+    # add number of lines
+    expected_filesize += len(data)
+    import os
+    actual_filesize = os.path.getsize(filepath)
+
+    #Assert
+    assert actual_filesize > 0
+    assert actual_filesize == expected_filesize
+    
+
