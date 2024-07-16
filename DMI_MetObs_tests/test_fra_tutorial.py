@@ -27,9 +27,11 @@ import DMI_MetObs.assets.constants as dmi_asset_constants
 #
 ###############
 
-@hourly_partitioned_config(start_date=datetime.fromisoformat(dmi_asset_constants.STARTDATETIME),
-                           timezone="Europe/Copenhagen",
-                           fmt="%Y-%m-%dT%H:%M:%S%z")
+@hourly_partitioned_config(
+        # start_date=datetime.fromisoformat(dmi_asset_constants.STARTDATETIME),
+        start_date=datetime.strptime(dmi_asset_constants.STARTDATETIME, dmi_asset_constants.DATETIME_FORMAT),
+        timezone="Europe/Copenhagen",
+        fmt="%Y-%m-%dT%H.%M.%S%z")
 def my_partitioned_config(start: datetime, end: datetime):
     return {
         "ops": {
@@ -70,8 +72,8 @@ def test_my_partitioned_config():
             # "process_data_for_datetime": {
             "process_data": {
                 "config": {
-                    "start": "2024-06-01T00:00:00",
-                    "end"  : "2024-06-02T00:00:00"
+                    "start": "2024-06-01T00.00.00",
+                    "end"  : "2024-06-02T00.00.00"
                 }
             }
         }
@@ -83,7 +85,8 @@ def test_my_partitioned_config():
 
 def test_today_num_hours_from_midnight():
     dt = datetime.now()
-    sd = datetime.fromisoformat(dmi_asset_constants.STARTDATETIME)
+    # sd = datetime.fromisoformat(dmi_asset_constants.STARTDATETIME)
+    sd = datetime.strptime(dmi_asset_constants.STARTDATETIME, dmi_asset_constants.DATETIME_FORMAT)
     # assert sd == 0
     # assert datetime.now().astimezone().isoformat(timespec='minutes') == ""
     # assert dt.isoformat() == ""
@@ -92,25 +95,32 @@ def test_today_num_hours_from_midnight():
     dd = dt - midnight
     # assert dd != 0
     assert dd.seconds//3600 == dt.hour
-    hours_from_startdate = (datetime.now().astimezone() - datetime.fromisoformat(dmi_asset_constants.STARTDATETIME)).total_seconds() // 3600
+    # hours_from_startdate = (datetime.now().astimezone() - datetime.fromisoformat(dmi_asset_constants.STARTDATETIME)).total_seconds() // 3600
+    hours_from_startdate = (datetime.now().astimezone() 
+                                - datetime.strptime(
+                                    dmi_asset_constants.STARTDATETIME,
+                                    dmi_asset_constants.DATETIME_FORMAT
+                                )
+                            ).total_seconds() // 3600
     # assert hours_from_startdate == 369
 
 @pytest.mark.filterwarnings("ignore:DeprecationWarning:")
 def test_my_partitioned_config_keys():
     # Arrange
+    startdatetime = datetime.strptime(dmi_asset_constants.STARTDATETIME, dmi_asset_constants.DATETIME_FORMAT)
     hours_from_startdate = (
-        datetime.now().astimezone() 
-        - datetime.fromisoformat(dmi_asset_constants.STARTDATETIME)).total_seconds() // 3600
+        datetime.now().astimezone() - startdatetime
+    ).total_seconds() // 3600
     # test that the partition keys are what you expect
     run_config = my_partitioned_config(
-        datetime.fromisoformat(dmi_asset_constants.STARTDATETIME), 
-        datetime.fromisoformat(dmi_asset_constants.STARTDATETIME) + timedelta(days=1)
+        startdatetime, 
+        startdatetime + timedelta(days=1)
     )
     # Act
     keys = my_partitioned_config.get_partition_keys()
     # Assert
-    assert keys[0] == "2024-06-01T12:00:00+0200"
-    assert keys[1] == "2024-06-01T13:00:00+0200"
+    assert keys[0] == "2024-06-01T12.00.00+0200"
+    assert keys[1] == "2024-06-01T13.00.00+0200"
     #assert keys[-1] == "2024-06-01-23:00"
     assert len(keys) == hours_from_startdate
     # test that the run_config for a partition is valid for partitioned_op_job
@@ -120,7 +130,7 @@ def test_my_partitioned_config_keys():
     assert run_config == {
         "ops": {
             "process_data": {
-                "config": {"start": "2024-06-01T12:00:00+0200", "end": "2024-06-01T13:00:00+0200"}
+                "config": {"start": "2024-06-01T12.00.00+0200", "end": "2024-06-01T13.00.00+0200"}
             }
         }
     }
@@ -132,7 +142,8 @@ def test_my_partitioned_config_keys():
     assert run_config == {
         "ops": {
             "process_data": {
-                "config": {"start": "2024-06-01T13:00:00+0200", "end": "2024-06-01T14:00:00+0200"}
+                "config": {"start": "2024-06-01T13.00.00+0200", 
+                            "end":  "2024-06-01T14.00.00+0200"}
             }
         }
     }

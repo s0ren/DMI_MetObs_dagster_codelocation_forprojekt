@@ -1,14 +1,30 @@
 # from ast import List
-from dagster import asset, EnvVar
+from dagster import asset, EnvVar, AssetExecutionContext
 
 import json
 import jsonlines
 from pydantic import Json
+from datetime import datetime, timedelta
 
 # import requests
 
-from DMI_MetObs.extraction.dmi_utils import request_all_features
+from DMI_MetObs.extraction.dmi_utils import (
+    request_all_features, 
+    timestamp_1hour_aligned, 
+    timestamp2filename,
+    store_data_fs
+)
+from DMI_MetObs.extraction.metobs import (
+    get_obs_hour,
+)
 from . import constants
+
+from ..partitions import metobs_hourly_partition
+
+@asset
+def hourlyObs():
+    pass
+    
 
 @asset
 def latestObservations():
@@ -37,8 +53,20 @@ def latestObservations():
     with jsonlines.open(prep_file_path, "w") as writer:
         writer.write_all(features)
     
-
     return features
+
+@asset(partitions_def=metobs_hourly_partition)
+def hourlyObservations(context: AssetExecutionContext):
+    API_KEY = "b0803242-5b7d-4ac6-93c2-2fb779cba423"
+    partition_date_str = context.partition_key
+    partition_date = datetime.strptime(partition_date_str, constants.DATETIME_FORMAT)
+    filepath = constants.METOBS_RAW_TEMPALTE_FILE_PATH_L.format(
+        timestamp2filename(partition_date)
+    )
+
+    obs_features = get_obs_hour(API_KEY, partition_date)
+    filesize = store_data_fs(obs_features, filepath)
+    # return f"grabbed and storred {filesize} bytes (...plus some linefeeds)"
 
 # @asset
 # def plus_two(x :int) -> int:

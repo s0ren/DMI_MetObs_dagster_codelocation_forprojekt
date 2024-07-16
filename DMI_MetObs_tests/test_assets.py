@@ -16,7 +16,7 @@ from DMI_MetObs.assets.metobs import (
     latestObservations, 
     # twentytwo
 )
-from DMI_MetObs.jobs import metobs_realtime_update_job
+# from DMI_MetObs.jobs import metobs_realtime_update_job
 
 # from dagster import validate_run_config, daily_partitioned_config, hourly_partitioned_config
 from datetime import datetime, timedelta
