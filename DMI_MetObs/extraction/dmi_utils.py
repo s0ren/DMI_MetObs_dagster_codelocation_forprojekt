@@ -5,6 +5,8 @@ from pydantic import Json, AwareDatetime
 import jsonlines
 from datetime import datetime, timedelta
 
+from DMI_MetObs.assets import constants
+
 def timestamp10min_aligned(timestamp : datetime = datetime.now().astimezone() ) -> AwareDatetime:
     """_summary_
     Aligns a datetime to nearest previus whole 10 minutes, timezone aware. Defaults to now.
@@ -53,5 +55,6 @@ def store_data_fs(data: str, filepath: str):
     return numWritten
 
 def timestamp2filename(timestamp: AwareDatetime) -> str:
-    filepath = timestamp.astimezone().isoformat().replace(':', '_').replace('+','__')
+    # filepath = timestamp.astimezone().isoformat().replace(':', '_').replace('+','__')
+    filepath = timestamp.strftime(constants.DATETIME_FORMAT)
     return filepath

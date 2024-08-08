@@ -4,8 +4,9 @@ WORKSPACE_ROOT = os.path.abspath(os.path.dirname(__file__) + '/..')
 DATA_ROOT = "data"
 METOBS_RAW_TEMPALTE_FILE_PATH = DATA_ROOT + "/raw/metops_{}.json"
 METOBS_RAW_TEMPALTE_FILE_PATH_L = DATA_ROOT + "/raw/metops_{}.jsonl"
+METOBS_GZIP_TEMPALTE_FILE_PATH_L = DATA_ROOT + "/gzip/{}.gz"
 
-STARTDATE = "2024-07-16"
+STARTDATE = "2024-07-18"
 STARTDATETIME = STARTDATE + "T00.00.00+0200"
 
 DATE_FORMAT = "%Y-%m-%d"
