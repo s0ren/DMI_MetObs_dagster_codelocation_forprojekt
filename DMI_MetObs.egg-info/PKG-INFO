@@ -3,6 +3,8 @@ Name: DMI_MetObs
 Version: 0.0.0
 Requires-Dist: dagster
 Requires-Dist: dagster-cloud
+Requires-Dist: dagster-duckdb
+Requires-Dist: jsonlines
 Provides-Extra: dev
 Requires-Dist: dagster-webserver; extra == "dev"
 Requires-Dist: pytest; extra == "dev"

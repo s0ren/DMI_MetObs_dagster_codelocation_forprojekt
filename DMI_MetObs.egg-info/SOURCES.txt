@@ -3,9 +3,13 @@ pyproject.toml
 setup.cfg
 setup.py
 DMI_MetObs/__init__.py
-DMI_MetObs/assets.py
+DMI_MetObs/_assets.py
 DMI_MetObs.egg-info/PKG-INFO
 DMI_MetObs.egg-info/SOURCES.txt
 DMI_MetObs.egg-info/dependency_links.txt
 DMI_MetObs.egg-info/requires.txt
 DMI_MetObs.egg-info/top_level.txt
+DMI_MetObs/jobs/__init__.py
+DMI_MetObs/partitions/__init__.py
+DMI_MetObs/resources/__init__.py
+DMI_MetObs/scedules/__init__.py
